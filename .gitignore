@@ -1,0 +1,84 @@
+# ---------------------------------------------------------------------------
+# Runtime data (bind-mounted into containers via AETHER_DATA_DIR, default ./data)
+# SQLite DB + WAL/SHM files, Mosquitto persistence and logs
+# ---------------------------------------------------------------------------
+/data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+
+# ---------------------------------------------------------------------------
+# Secrets & local configuration
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+# WiFi credentials used by scripts/wifi-setup.sh (copy of wifi.conf.example)
+scripts/wifi.conf
+# Mosquitto auth files / TLS material, if added later
+mosquitto/config/passwd
+mosquitto/config/*.pwd
+mosquitto/config/acl
+*.pem
+*.key
+*.crt
+
+# ---------------------------------------------------------------------------
+# Python (api/, ingest/, shared/, scripts/)
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---------------------------------------------------------------------------
+# Logs, pids, temp files
+# ---------------------------------------------------------------------------
+*.log
+*.pid
+*.tmp
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------------------------
+# Docker
+# ---------------------------------------------------------------------------
+docker-compose.override.yml
+
+# ---------------------------------------------------------------------------
+# Editors / OS
+# ---------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.idea/
+.vscode/
+*.code-workspace
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Claude Code (keep shared project settings, ignore personal ones)
+# ---------------------------------------------------------------------------
+.claude/settings.local.json
+
+# ---------------------------------------------------------------------------
+# Local scratch / private backups (e.g. real WiFi config copies)
+# ---------------------------------------------------------------------------
+/temp/
