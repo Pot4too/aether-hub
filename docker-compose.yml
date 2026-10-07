@@ -1,0 +1,62 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: always
+    stop_grace_period: 20s
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ${AETHER_DATA_DIR:-./data}/mosquitto/data:/mosquitto/data
+      - ${AETHER_DATA_DIR:-./data}/mosquitto/log:/mosquitto/log
+    logging:
+      driver: local
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  ingest:
+    build:
+      context: .
+      dockerfile: ingest/Dockerfile
+    restart: always
+    stop_grace_period: 20s
+    depends_on:
+      - mosquitto
+    environment:
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+      MQTT_TOPIC_FILTER: ${MQTT_TOPIC_FILTER:-sensors/+/data}
+      MQTT_USERNAME: ${MQTT_USERNAME:-}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-}
+      DB_PATH: /data/aether.db
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ${AETHER_DATA_DIR:-./data}/sqlite:/data
+    logging:
+      driver: local
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: always
+    stop_grace_period: 20s
+    depends_on:
+      - ingest
+    environment:
+      DB_PATH: /data/aether.db
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-*}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ${AETHER_DATA_DIR:-./data}/sqlite:/data
+    ports:
+      - "8000:8000"
+    logging:
+      driver: local
+      options:
+        max-size: "5m"
+        max-file: "3"
