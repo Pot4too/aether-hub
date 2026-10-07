@@ -1,0 +1,31 @@
+# Copy to scripts/wifi.conf (gitignored — it holds passwords) and edit.
+# Then apply with:  sudo scripts/wifi-setup.sh apply
+#
+# This file is sourced by bash, so quote values.
+
+# --- Interfaces -------------------------------------------------------------
+# Bind profiles to hardware MAC addresses so wlan0/wlan1 swapping between
+# boots can't break things. Find them with:  nmcli -f GENERAL.DEVICE,GENERAL.HWADDR device show
+# Leave empty to bind by interface name instead (AP_IFACE / UPLINK_IFACE).
+AP_MAC=""                 # onboard WiFi (Raspberry Pi MAC prefix)
+UPLINK_MAC=""             # USB adapter
+AP_IFACE="wlan0"
+UPLINK_IFACE="wlan1"
+
+# --- Access point for the IoT nodes (onboard WiFi) -------------------------
+AP_CON_NAME="aether-hub-ap"
+AP_SSID="aether-hub"
+AP_PASSPHRASE="change-me-ap-passphrase"   # 8+ characters
+AP_CHANNEL="6"                     # 2.4 GHz; ESP32-C6 nodes are 2.4 GHz only
+AP_IP="192.168.77.1/24"
+
+# --- Uplinks on the USB adapter, highest priority wins ---------------------
+# uplink <profile-name> <ssid> <password> <priority>
+# Higher priority number = preferred. Add or remove lines freely; profiles
+# removed from this list are NOT deleted automatically (use `remove`).
+uplink home  "YourHomeSSID"   "your-home-wifi-password"   20
+uplink phone "YourPhoneHotspot" "your-hotspot-password"   10
+
+# Route metric: lower = preferred default route. Priority order is kept.
+# home gets UPLINK_METRIC_BASE, next gets +100, etc.
+UPLINK_METRIC_BASE=100
